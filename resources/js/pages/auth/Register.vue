@@ -46,7 +46,20 @@ defineOptions({
                 />
                 <InputError :message="errors.name" />
             </div>
-
+            <div class="grid gap-2">
+                <Label for="username">Username</Label>
+                <Input
+                    id="username"
+                    type="text"
+                    required
+                    v-focus
+                    :tabindex="1"
+                    autocomplete="username"
+                    name="username"
+                    placeholder="Mega superman"
+                />
+                <InputError :message="errors.username" />
+            </div>
             <div class="grid gap-2">
                 <Label for="email">Email address</Label>
                 <Input
