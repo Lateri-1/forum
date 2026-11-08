@@ -5,14 +5,15 @@ use App\Http\Controllers\UserController;
 
 Route::inertia('/', 'Welcome')->name('home');
 
-Route::get('/users', [UserController::class, 'admin'])
-    ->middleware(['auth', 'admin']);
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');
 });
-Route::get('/users/{user}', [UserController::class, 'show'])
-    ->middleware(['auth', 'admin']);
-Route::patch('/users/{user}', [UserController::class, 'update']);
+Route::middleware(['auth', 'admin'])->group(Function () {
+    Route::get('/users/{user}', [UserController::class, 'show']);
+    Route::patch('/users/{user}', [UserController::class, 'update']);
+    Route::get('/users', [UserController::class, 'admin']);
+
+});
 
 require __DIR__.'/settings.php';
