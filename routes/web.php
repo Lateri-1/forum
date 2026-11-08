@@ -13,7 +13,7 @@ Route::middleware(['auth', 'admin'])->group(Function () {
     Route::get('/users/{user}', [UserController::class, 'show']);
     Route::patch('/users/{user}', [UserController::class, 'update']);
     Route::get('/users', [UserController::class, 'admin']);
-
+    Route::delete('/users/{user_id}', [UserController::class, 'destroy']);
 });
 
 require __DIR__.'/settings.php';
