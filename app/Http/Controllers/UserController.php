@@ -35,7 +35,7 @@ class UserController extends Controller
     // ProductController
     public function destroy(User $user)
     {
-        if ($user->is_locked) {
+        if ($user->id === auth()->id()) {
             abort(403);
         }
 
