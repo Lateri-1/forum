@@ -46,4 +46,31 @@ class TopicController extends Controller
 
         return redirect("/topics/{$topic->id}");
     }
+        public function edit(Topic $topic)
+    {
+        return Inertia::render('topics/Edit', [
+            'topic' => $topic->only('id', 'title', 'body'),
+        ]);
+    }
+
+    public function update(Request $request, Topic $topic)
+    {
+        $data = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'body' => ['required', 'string', 'max:10000'],
+        ]);
+
+        $topic->update($data);
+
+        return redirect("/topics/{$topic->id}");
+    }
+
+    public function destroy(Topic $topic)
+    {
+        $threadId = $topic->thread_id;
+
+        $topic->delete();
+
+        return redirect("/threads/{$threadId}");
+    }
 }

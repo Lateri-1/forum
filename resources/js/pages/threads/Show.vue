@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { Head, Link, usePage } from '@inertiajs/vue3';
-import { Plus } from '@lucide/vue';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { Plus, Trash2 } from '@lucide/vue';
 import { Button } from '@/components/ui/button';
 import { home, login } from '@/routes';
+
 
 
 defineOptions({
@@ -30,6 +31,11 @@ const page = usePage();
 function formatDate(value: string) {
     return new Date(value).toLocaleDateString('nl-NL');
 }
+function removeThread() {
+    if (confirm('Deze thread met alle topics en replies verwijderen?')) {
+        router.delete(`/threads/${props.thread.id}`);
+    }
+}
 </script>
 
 <template>
@@ -44,19 +50,30 @@ function formatDate(value: string) {
                 </p>
             </div>
 
-            <Button v-if="page.props.auth.user" as-child class="shrink-0">
-                <Link :href="`/threads/${thread.id}/topics/create`">
-                    <Plus />
-                    Nieuw topic
+                <div class="flex shrink-0 gap-2">
+                <Button v-if="page.props.auth.user" as-child>
+                    <Link :href="`/threads/${thread.id}/topics/create`">
+                        <Plus />
+                        Nieuw topic
+                    </Link>
+                </Button>
+                <Link
+                    v-else
+                    :href="login()"
+                    class="text-sm text-muted-foreground underline underline-offset-4"
+                >
+                    Log in om een topic te starten
                 </Link>
-            </Button>
-            <Link
-                v-else
-                :href="login()"
-                class="shrink-0 text-sm text-muted-foreground underline underline-offset-4"
-            >
-                Log in om een topic te starten
-            </Link>
+
+                <Button
+                    v-if="page.props.auth.user?.role === 'admin'"
+                    variant="destructive"
+                    @click="removeThread"
+                >
+                    <Trash2 />
+                    Verwijderen
+                </Button>
+            </div>
         </div>
         <p v-if="topics.length === 0" class="text-sm text-muted-foreground">
             In deze thread zijn nog geen topics.

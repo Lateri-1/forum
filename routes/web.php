@@ -16,16 +16,21 @@ Route::middleware('auth')->group(function () {
     Route::get('/threads/{thread}/topics/create', [TopicController::class, 'create']);
     Route::post('/threads/{thread}/topics', [TopicController::class, 'store']);
     Route::post('/topics/{topic}/replies', [ReplyController::class, 'store']);
+
+    Route::get('/topics/{topic}/edit', [TopicController::class, 'edit'])->can('update', 'topic');
+    Route::patch('/topics/{topic}', [TopicController::class, 'update'])->can('update', 'topic');
+    Route::patch('/replies/{reply}', [ReplyController::class, 'update'])->can('update', 'reply');
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::inertia('dashboard', 'Dashboard')->name('dashboard');
-});
+Route::redirect('/dashboard', '/')->name('dashboard');
 
 // als admin
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/threads/create', [ThreadController::class, 'create']);
     Route::post('/threads', [ThreadController::class, 'store']);
+    Route::delete('/threads/{thread}', [ThreadController::class, 'destroy']);
+    Route::delete('/topics/{topic}', [TopicController::class, 'destroy']);
+    Route::delete('/replies/{reply}', [ReplyController::class, 'destroy']);
 
     Route::get('/users', [UserController::class, 'admin']);
     Route::get('/users/{user}', [UserController::class, 'show']);

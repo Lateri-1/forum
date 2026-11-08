@@ -50,4 +50,10 @@ class ThreadController extends Controller
 
         return redirect('/');
     }
+        public function destroy(Thread $thread)
+    {
+        $thread->delete();
+
+        return redirect('/');
+    }
 }
