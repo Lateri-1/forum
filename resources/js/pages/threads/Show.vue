@@ -12,7 +12,7 @@ defineOptions({
     },
 });
 
-defineProps<{
+const props = defineProps<{
     thread: {
         id: number;
         title: string;
