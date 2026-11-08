@@ -1,13 +1,17 @@
 <script setup lang="ts">
+import { Link, router } from '@inertiajs/vue3';
 
-
-import { Link } from '@inertiajs/vue3';
-
-
-
-defineProps<{   
+defineProps<{
     users: { id: number; username: string; email: string }[];
 }>();
+
+function remove(id: number) {
+    if (!confirm('Weet je zeker dat je deze gebruiker wilt verwijderen?')) {
+        return;
+    }
+
+    router.delete(`/users/${id}`);
+}
 </script>
 
 <template>
@@ -19,6 +23,8 @@ defineProps<{
                     <th>usernames</th>
                     <th>emails</th>
                     <th>id</th>
+                    <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -27,6 +33,9 @@ defineProps<{
                     <td>{{ user.email }}</td>
                     <td>{{ user.id }}</td>
                     <td><Link :href="`/users/${user.id}`">{{ user.username }}</Link></td>
+                    <td>
+                        <button type="button" @click="remove(user.id)">Verwijderen</button>
+                    </td>
                 </tr>
             </tbody>
         </table>
