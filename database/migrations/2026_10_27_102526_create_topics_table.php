@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('topics', function (Blueprint $table) {
             $table->id();
             $table->foreignId('thread_id')->constrained();
+            $table->foreignId('topic_id')->constrained()->cascadeOnDelete();
             $table->string('title'); 
             $table->text('body');
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();           

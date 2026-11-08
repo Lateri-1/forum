@@ -61,3 +61,12 @@ test('lege reply geeft een fout', function () {
         ->post("/topics/{$topic->id}/replies", ['body' => ''])
         ->assertSessionHasErrors('body');
 });
+test('thread verwijderen verwijdert ook topics en replies', function () {
+    $topic = maakTopic();
+    $topic->replies()->create(['body' => 'Antwoord', 'user_id' => null]);
+
+    $topic->thread->delete();
+
+    expect(App\Models\Topic::count())->toBe(0);
+    expect(App\Models\Reply::count())->toBe(0);
+});
