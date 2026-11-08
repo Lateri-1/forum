@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, FolderGit2, LayoutGrid, Users } from '@lucide/vue';
+import { BookOpen, FolderGit2, LayoutGrid, LogIn, MessagesSquare, UserPlus, Users } from '@lucide/vue';
 import { computed } from 'vue';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
@@ -15,15 +15,19 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
+import { dashboard, home, login, register } from '@/routes';
 import type { NavItem } from '@/types';
 
 const page = usePage();
 
 const mainNavItems = computed<NavItem[]>(() => {
     const items: NavItem[] = [
-        { title: 'Dashboard', href: dashboard(), icon: LayoutGrid },
+        { title: 'Forum', href: home(), icon: MessagesSquare },
     ];
+
+    if (page.props.auth.user) {
+        items.push({ title: 'Dashboard', href: dashboard(), icon: LayoutGrid });
+    }
 
     if (page.props.auth.user?.role === 'admin') {
         items.push({ title: 'Users', href: '/users', icon: Users });
@@ -52,7 +56,7 @@ const footerNavItems: NavItem[] = [
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
-                        <Link :href="dashboard()">
+                        <Link :href="home()">
                             <AppLogo />
                         </Link>
                     </SidebarMenuButton>
@@ -66,7 +70,27 @@ const footerNavItems: NavItem[] = [
 
         <SidebarFooter>
             <NavFooter :items="footerNavItems" />
-            <NavUser />
+
+            <NavUser v-if="page.props.auth.user" />
+
+            <SidebarMenu v-else>
+                <SidebarMenuItem>
+                    <SidebarMenuButton as-child>
+                        <Link :href="login()">
+                            <LogIn />
+                            <span>Inloggen</span>
+                        </Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                    <SidebarMenuButton as-child>
+                        <Link :href="register()">
+                            <UserPlus />
+                            <span>Registreren</span>
+                        </Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+            </SidebarMenu>
         </SidebarFooter>
     </Sidebar>
     <slot />
