@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Thread;
 use App\Models\Topic;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class TopicController extends Controller
@@ -20,5 +22,28 @@ class TopicController extends Controller
             'topic' => $topic->only('id', 'title', 'body', 'created_at', 'user', 'thread'),
             'replies' => $replies,
         ]);
+    }
+
+    public function create(Thread $thread)
+    {
+        return Inertia::render('topics/Create', [
+            'thread' => $thread->only('id', 'title'),
+        ]);
+    }
+
+    public function store(Request $request, Thread $thread)
+    {
+        $data = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'body' => ['required', 'string', 'max:10000'],
+        ]);
+
+        $topic = $thread->topics()->create([
+            'title' => $data['title'],
+            'body' => $data['body'],
+            'user_id' => $request->user()->id,
+        ]);
+
+        return redirect("/topics/{$topic->id}");
     }
 }

@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
+import { Plus } from '@lucide/vue';
 import Heading from '@/components/Heading.vue';
+import { Button } from '@/components/ui/button';
 import { home } from '@/routes';
 
 defineOptions({
@@ -17,13 +19,24 @@ defineProps<{
         topics_count: number;
     }[];
 }>();
+
+const page = usePage();
 </script>
 
 <template>
     <Head title="Forum" />
 
     <div class="flex flex-col gap-6 p-4">
-        <Heading title="Forum" description="Kies een categorie" />
+        <div class="flex items-start justify-between gap-4">
+            <Heading title="Forum" description="Kies een categorie" />
+
+            <Button v-if="page.props.auth.user?.role === 'admin'" as-child>
+                <Link href="/threads/create">
+                    <Plus />
+                    Nieuwe thread
+                </Link>
+            </Button>
+        </div>
 
         <p v-if="threads.length === 0" class="text-sm text-muted-foreground">
             Er zijn nog geen threads.

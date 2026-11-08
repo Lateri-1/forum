@@ -1,29 +1,35 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserController; 
-use App\Http\Controllers\ThreadController;
 use App\Http\Controllers\ReplyController;
-use App\Http\Controllers\TopicController;  
+use App\Http\Controllers\ThreadController;
+use App\Http\Controllers\TopicController;
+use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
 
 // als gast
 Route::get('/', [ThreadController::class, 'index'])->name('home');
-Route::get('/threads/{thread}', [ThreadController::class, 'show']);
-Route::get('/topics/{topic}', [TopicController::class, 'show']);
+Route::get('/threads/{thread}', [ThreadController::class, 'show'])->whereNumber('thread');
+Route::get('/topics/{topic}', [TopicController::class, 'show'])->whereNumber('topic');
 
-Route::post('/topics/{topic}/replies', [ReplyController::class, 'store'])
-    ->middleware('auth');
+// als ingelogd
+Route::middleware('auth')->group(function () {
+    Route::get('/threads/{thread}/topics/create', [TopicController::class, 'create']);
+    Route::post('/threads/{thread}/topics', [TopicController::class, 'store']);
+    Route::post('/topics/{topic}/replies', [ReplyController::class, 'store']);
+});
 
-// ald ingelogd
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');
 });
 
 // als admin
-Route::middleware(['auth', 'admin'])->group(Function () {
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/threads/create', [ThreadController::class, 'create']);
+    Route::post('/threads', [ThreadController::class, 'store']);
+
+    Route::get('/users', [UserController::class, 'admin']);
     Route::get('/users/{user}', [UserController::class, 'show']);
     Route::patch('/users/{user}', [UserController::class, 'update']);
-    Route::get('/users', [UserController::class, 'admin']);
     Route::delete('/users/{user}', [UserController::class, 'destroy']);
 });
 

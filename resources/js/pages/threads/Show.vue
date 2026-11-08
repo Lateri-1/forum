@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
-import Heading from '@/components/Heading.vue';
-import { home } from '@/routes';
+import { Head, Link, usePage } from '@inertiajs/vue3';
+import { Plus } from '@lucide/vue';
+import { Button } from '@/components/ui/button';
+import { home, login } from '@/routes';
+
 
 defineOptions({
     layout: {
@@ -23,6 +25,7 @@ defineProps<{
         user: { id: number; username: string } | null;
     }[];
 }>();
+const page = usePage();
 
 function formatDate(value: string) {
     return new Date(value).toLocaleDateString('nl-NL');
@@ -33,13 +36,28 @@ function formatDate(value: string) {
     <Head :title="thread.title" />
 
     <div class="flex flex-col gap-6 p-4">
-        <div>
-            <Heading :title="thread.title" />
-            <p class="-mt-6 text-sm whitespace-pre-line text-muted-foreground">
-                {{ thread.description }}
-            </p>
-        </div>
+        <div class="flex items-start justify-between gap-4">
+            <div>
+                <Heading :title="thread.title" />
+                <p class="-mt-6 text-sm whitespace-pre-line text-muted-foreground">
+                    {{ thread.description }}
+                </p>
+            </div>
 
+            <Button v-if="page.props.auth.user" as-child class="shrink-0">
+                <Link :href="`/threads/${thread.id}/topics/create`">
+                    <Plus />
+                    Nieuw topic
+                </Link>
+            </Button>
+            <Link
+                v-else
+                :href="login()"
+                class="shrink-0 text-sm text-muted-foreground underline underline-offset-4"
+            >
+                Log in om een topic te starten
+            </Link>
+        </div>
         <p v-if="topics.length === 0" class="text-sm text-muted-foreground">
             In deze thread zijn nog geen topics.
         </p>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Thread;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class ThreadController extends Controller
@@ -18,7 +19,8 @@ class ThreadController extends Controller
             'threads' => $threads,
         ]);
     }
-        public function show(Thread $thread)
+
+    public function show(Thread $thread)
     {
         $topics = $thread->topics()
             ->with('user:id,username')
@@ -30,5 +32,22 @@ class ThreadController extends Controller
             'thread' => $thread->only('id', 'title', 'description'),
             'topics' => $topics,
         ]);
+    }
+
+    public function create()
+    {
+        return Inertia::render('threads/Create');
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string', 'max:500'],
+        ]);
+
+        $request->user()->threads()->create($data);
+
+        return redirect('/');
     }
 }

@@ -35,3 +35,39 @@ test('gast ziet een thread met topics', function () {
 test('onbekende thread geeft 404', function () {
     $this->get('/threads/9999')->assertNotFound();
 });
+test('admin kan een thread aanmaken', function () {
+    $admin = User::factory()->admin()->create();
+
+    $this->actingAs($admin)->get('/threads/create')
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page->component('threads/Create'));
+
+    $this->actingAs($admin)
+        ->post('/threads', ['title' => 'Nieuw', 'description' => 'Korte tekst'])
+        ->assertRedirect('/');
+
+    $thread = Thread::first();
+    expect($thread->title)->toBe('Nieuw');
+    expect($thread->user_id)->toBe($admin->id);
+});
+
+test('gewone user kan geen thread aanmaken', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)->get('/threads/create')->assertForbidden();
+    $this->actingAs($user)
+        ->post('/threads', ['title' => 'Nieuw', 'description' => 'Korte tekst'])
+        ->assertForbidden();
+
+    expect(Thread::count())->toBe(0);
+});
+
+test('gast wordt bij thread aanmaken naar login gestuurd', function () {
+    $this->get('/threads/create')->assertRedirect(route('login'));
+});
+
+test('thread zonder titel geeft een fout', function () {
+    $this->actingAs(User::factory()->admin()->create())
+        ->post('/threads', ['title' => '', 'description' => 'Tekst'])
+        ->assertSessionHasErrors('title');
+});
