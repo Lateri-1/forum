@@ -11,5 +11,8 @@ Route::get('/users', [UserController::class, 'admin'])
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');
 });
+Route::get('/users/{user}', [UserController::class, 'show'])
+    ->middleware(['auth', 'admin']);
+Route::patch('/users/{user}', [UserController::class, 'update']);
 
 require __DIR__.'/settings.php';
