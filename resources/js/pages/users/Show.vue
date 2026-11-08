@@ -36,7 +36,6 @@ function submit() {
 
         <input v-model="form.email" />
         <p v-if="form.errors.email">{{ form.errors.email }}</p>
-        <pre>{{ form.errors }}</pre>
         <button type="submit" :disabled="form.processing">Opslaan</button>  
     </form>
 </template>
