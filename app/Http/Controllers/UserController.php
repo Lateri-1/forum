@@ -26,7 +26,7 @@ class UserController extends Controller
     }
     public function update(Request $request, User $user)   
     {
-        $data = $request->validate($this->ProfileValidationRules($user->id));  
+        $data = $request->validate($this->profileRules($user->id));  
         $user->update($data);           
     return redirect("/users/{$user->id}");   
     }
